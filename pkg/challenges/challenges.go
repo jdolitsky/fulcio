@@ -46,6 +46,9 @@ type AdditionalInfo int
 const (
 	GithubWorkflowTrigger AdditionalInfo = iota
 	GithubWorkflowSha
+	GithubWorkflowRepo
+	GithubWorkflowWorkflow
+	GithubWorkflowRef
 )
 
 type ChallengeResult struct {
@@ -254,8 +257,11 @@ func workflowFromIDToken(token *oidc.IDToken) (string, error) {
 func workflowInfoFromIDToken(token *oidc.IDToken) (map[AdditionalInfo]string, error) {
 	// Extract custom claims
 	var claims struct {
-		Sha     string `json:"sha"`
-		Trigger string `json:"event_name"`
+		Sha      string `json:"sha"`
+		Trigger  string `json:"event_name"`
+		Repo     string `json:"repo"`
+		Workflow string `json:"workflow"`
+		Ref      string `json:"ref"`
 		// The other fields that are present here seem to depend on the type
 		// of workflow trigger that initiated the action.
 	}
@@ -265,8 +271,11 @@ func workflowInfoFromIDToken(token *oidc.IDToken) (map[AdditionalInfo]string, er
 
 	// We use this in URIs, so it has to be a URI.
 	return map[AdditionalInfo]string{
-		GithubWorkflowSha:     claims.Sha,
-		GithubWorkflowTrigger: claims.Trigger}, nil
+		GithubWorkflowSha:      claims.Sha,
+		GithubWorkflowTrigger:  claims.Trigger,
+		GithubWorkflowRepo:     claims.Repo,
+		GithubWorkflowWorkflow: claims.Workflow,
+		GithubWorkflowRef:      claims.Ref}, nil
 }
 
 func isSpiffeIDAllowed(host, spiffeID string) bool {
