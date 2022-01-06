@@ -54,6 +54,7 @@ spec:
           mountPath: /etc/fulcio-config
         - name: fulcio-secret
           mountPath: /etc/fulcio-secret
+          optional: true
           readOnly: true
         - name: oidc-info
           mountPath: /var/run/fulcio
